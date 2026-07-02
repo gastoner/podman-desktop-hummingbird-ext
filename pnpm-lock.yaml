@@ -25,6 +25,7 @@ overrides:
   dompurify: '>=3.4.11'
   undici@>=7: '>=7.28.0 <8'
   undici@^6: '>=6.27.0 <7'
+  '@podman-desktop/api': link:../podman-desktop/packages/extension-api
 
 importers:
 
@@ -40,8 +41,8 @@ importers:
         specifier: ^9.39.4
         version: 9.39.4
       '@podman-desktop/api':
-        specifier: ^1.28.2
-        version: 1.28.2
+        specifier: link:../podman-desktop/packages/extension-api
+        version: link:../podman-desktop/packages/extension-api
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.62.1
         version: 8.62.1(@typescript-eslint/parser@8.62.1(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.2(jiti@2.7.0))(typescript@5.9.3)
@@ -128,8 +129,8 @@ importers:
         version: 4.4.3
     devDependencies:
       '@podman-desktop/api':
-        specifier: ^1.28.2
-        version: 1.28.2
+        specifier: link:../../../podman-desktop/packages/extension-api
+        version: link:../../../podman-desktop/packages/extension-api
       '@podman-desktop/extension-hummingbird-core-api':
         specifier: workspace:^
         version: link:../shared
@@ -255,8 +256,8 @@ importers:
         version: 4.4.3
     devDependencies:
       '@podman-desktop/api':
-        specifier: ^1.28.2
-        version: 1.28.2
+        specifier: link:../../../podman-desktop/packages/extension-api
+        version: link:../../../podman-desktop/packages/extension-api
       swagger-typescript-api:
         specifier: ^13.12.3
         version: 13.12.3(magicast@0.5.3)
@@ -687,9 +688,6 @@ packages:
     resolution: {integrity: sha512-3nVv+e2FQwsW8Aw6qTU6f+1rfcJ3hrcnvH/mu9i8YhxO+9sqbOfpL8m6PbET5+xKOlz/VSbp0RoYWYCtIsnmuA==}
     peerDependencies:
       typescript: ^3 || ^4 || ^5
-
-  '@podman-desktop/api@1.28.2':
-    resolution: {integrity: sha512-kSBVWUSyuijS5a9HvqFAlihmy6D26nwTPZ0Yw9K/2W11grWeI/AvaS+THTmxHvXk8EbB9y8ydWpXhA8el67NKQ==}
 
   '@podman-desktop/grype-extension-api@0.1.0-next.202604011405-f6be4bb':
     resolution: {integrity: sha512-xQsDP8zDUCwjg7TFA/ZYqmS4pwA3lHKNRq7b01lBWaFwYokXRZCdN5+bvIt/Mxt58/wHzFN8ja+drXRHOk3kAw==}
@@ -4158,15 +4156,13 @@ snapshots:
       esquery: 1.6.0
       typescript: 5.9.3
 
-  '@podman-desktop/api@1.28.2': {}
-
   '@podman-desktop/grype-extension-api@0.1.0-next.202604011405-f6be4bb':
     dependencies:
       zod: 4.4.3
 
   '@podman-desktop/podman-extension-api@1.28.2':
     dependencies:
-      '@podman-desktop/api': 1.28.2
+      '@podman-desktop/api': link:../podman-desktop/packages/extension-api
 
   '@podman-desktop/ui-svelte@1.28.2(svelte-fa@4.0.4(svelte@5.56.4(@typescript-eslint/types@8.62.1)))(svelte@5.56.4(@typescript-eslint/types@8.62.1))':
     dependencies:

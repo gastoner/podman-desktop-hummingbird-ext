@@ -27,4 +27,6 @@ export abstract class RoutingApi {
   abstract navigateToCatalog(searchTerm?: string): Promise<void>;
 
   abstract navigateToContainerDetails(engineId: string, containerId: string): Promise<void>;
+
+  abstract reportNavigation(route: string, name: string): Promise<void>;
 }

@@ -21,6 +21,7 @@ import { alternativesAPI } from '/@/api/client';
 import { IMAGE_QUERY_KEY } from '/@/routes/images/[engineId]/[imageId]/report/constants';
 
 interface Data {
+  pageName: string;
   engineId: string;
   image: string;
   report: Promise<OptimisationReport>;
@@ -31,6 +32,7 @@ export const load: PageLoad = async ({ params, url }): Promise<Data> => {
   const imageId = decodeURIComponent(params.imageId);
 
   return {
+    pageName: 'Report',
     engineId,
     image: url.searchParams.get(IMAGE_QUERY_KEY) ?? '<unknown>',
     report: alternativesAPI.getOptimisationReport(engineId, imageId),

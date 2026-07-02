@@ -62,6 +62,7 @@ describe('error', () => {
   test('promise date reject should display empty screen with error', async () => {
     const { getByLabelText } = render(Page, {
       data: {
+        pageName: 'Catalog',
         repositories: Promise.reject<Array<ImageSummary>>(ERROR_MOCK),
       },
       params: {},
@@ -77,6 +78,7 @@ describe('error', () => {
   test('retry button should call invalidateAll', async () => {
     const { getByLabelText } = render(Page, {
       data: {
+        pageName: 'Catalog',
         repositories: Promise.reject<Array<ImageSummary>>(ERROR_MOCK),
       },
       params: {},
@@ -99,6 +101,7 @@ describe('loading', () => {
     // We pass a promise that never resolves (or at least doesn't resolve immediately)
     const { getAllByLabelText } = render(Page, {
       data: {
+        pageName: 'Catalog',
         repositories: new Promise<Array<ImageSummary>>(vi.fn()),
       },
       params: {},
@@ -113,6 +116,7 @@ describe('data', () => {
   test('should display repositories when promise resolves', async () => {
     const { getByLabelText } = render(Page, {
       data: {
+        pageName: 'Catalog',
         repositories: Promise.resolve(REPOSITORIES),
       },
       params: {},

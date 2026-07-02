@@ -15,7 +15,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { ExtensionContext } from '@podman-desktop/api';
+import { navigation, type ExtensionContext, type NavigationHistoryProvider } from '@podman-desktop/api';
 
 import { expect, test, vi, beforeEach } from 'vitest';
 import { MainService } from '/@/services/main-service';
@@ -28,12 +28,15 @@ import {
   ProviderApi,
 } from '@podman-desktop/extension-hummingbird-core-api';
 import { InversifyBinding } from '/@/inject/inversify-binding';
+import { RoutingService } from '/@/services/routing-service';
 import type { Container } from 'inversify';
 
 // mock inversify binding
 vi.mock(import('/@/inject/inversify-binding'));
 
-const EXTENSION_CONTEXT_MOCK: ExtensionContext = {} as unknown as ExtensionContext;
+const EXTENSION_CONTEXT_MOCK: ExtensionContext = {
+  subscriptions: [],
+} as unknown as ExtensionContext;
 const INVERSIFY_CONTAINER_MOCK: Container = {
   getAsync: vi.fn(),
   get: vi.fn(),
@@ -49,10 +52,16 @@ beforeEach(() => {
     switch (identifier) {
       case RpcExtension:
         return RPC_EXTENSION_MOCK;
+      case RoutingService:
+        return { setHistoryProvider: vi.fn() };
       default:
         return {};
     }
   });
+  vi.mocked(navigation.registerNavigationHistoryProvider).mockReturnValue({
+    dispose: vi.fn(),
+    onDidRequestNavigation: vi.fn(),
+  } as unknown as NavigationHistoryProvider);
 });
 
 function getMainService(): MainService {

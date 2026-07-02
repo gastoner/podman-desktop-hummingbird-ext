@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import type { AsyncInit } from '/@/utils/async-init';
-import type { Disposable } from '@podman-desktop/api';
+import type { Disposable, NavigationHistoryProvider } from '@podman-desktop/api';
 import { Publisher } from '/@/utils/publisher';
 import { Messages } from '@podman-desktop/extension-hummingbird-core-api';
 import { inject, injectable, postConstruct } from 'inversify';
@@ -25,6 +25,7 @@ import { WebviewService } from '/@/services/webview-service';
 @injectable()
 export class RoutingService extends Publisher<string | undefined> implements Disposable, AsyncInit {
   #route: string | undefined = undefined;
+  #historyProvider: NavigationHistoryProvider | undefined;
 
   constructor(
     @inject(WebviewService)
@@ -35,6 +36,18 @@ export class RoutingService extends Publisher<string | undefined> implements Dis
 
   @postConstruct()
   async init(): Promise<void> {}
+
+  setHistoryProvider(provider: NavigationHistoryProvider): void {
+    this.#historyProvider = provider;
+
+    provider.onDidRequestNavigation(entry => {
+      this.write(entry.route).catch(console.error);
+    });
+  }
+
+  pushToHistory(route: string, name: string): void {
+    this.#historyProvider?.pushEntry({ name, route });
+  }
 
   /**
    * This function return the route, and reset it.
@@ -47,16 +60,15 @@ export class RoutingService extends Publisher<string | undefined> implements Dis
   }
 
   protected async write(route: string): Promise<void> {
-    // update the route
     this.#route = route;
-    // notify
-    this.notify();
-    // reveal
+    // Reveal first so the webview is mounted before receiving the route update
     this.webviewService.getPanel()?.reveal();
+    this.notify();
   }
 
   override dispose(): void {
     super.dispose();
     this.#route = undefined;
+    this.#historyProvider = undefined;
   }
 }

@@ -42,4 +42,8 @@ export class RoutingApiImpl extends RoutingApi {
   override navigateToContainerDetails(_: string, containerId: string): Promise<void> {
     return navigation.navigateToContainer(containerId);
   }
+
+  override async reportNavigation(route: string, name: string): Promise<void> {
+    this.routing.pushToHistory(route, name);
+  }
 }

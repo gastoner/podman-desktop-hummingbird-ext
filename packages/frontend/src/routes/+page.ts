@@ -20,6 +20,7 @@ import type { SimpleImageInfo, ImageSummary } from '@podman-desktop/extension-hu
 import { hummingbirdAPI, imageAPI } from '/@/api/client';
 
 interface Data {
+  pageName: string;
   pulled?: Promise<Array<SimpleImageInfo>>;
   repositories: Promise<Array<ImageSummary>>;
   providerId?: string;
@@ -56,6 +57,7 @@ export const load: PageLoad = async ({ url, depends }): Promise<Data> => {
     ]).then(([images]) => images);
   }
   return {
+    pageName: 'Catalog',
     repositories: hummingbirdAPI.all(),
     pulled,
     providerId,

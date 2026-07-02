@@ -20,6 +20,7 @@ import type { LocalImageAlternative } from '@podman-desktop/extension-hummingbir
 import { alternativesAPI } from '/@/api/client';
 
 interface Data {
+  pageName: string;
   alternatives: Promise<Array<LocalImageAlternative>>;
   isGrypeInstalled: boolean;
 }
@@ -35,6 +36,7 @@ export const load: PageLoad = async ({ depends }): Promise<Data> => {
   const alternatives = Promise.all([alternativesAPI.getAlternatives(), promise]).then(([alternatives]) => alternatives);
 
   return {
+    pageName: 'Alternatives',
     alternatives,
     isGrypeInstalled,
   };

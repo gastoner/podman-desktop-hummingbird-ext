@@ -21,6 +21,7 @@ import { containerAPI, alternativesAPI, imageAPI } from '/@/api/client';
 import type { LocalImage } from '@podman-desktop/extension-hummingbird-core-api/src';
 
 interface Data {
+  pageName: string;
   container: Promise<LocalContainer>;
   alternative: Promise<ImageSummary>;
   localImage: Promise<Omit<LocalImage, 'containers'>>;
@@ -37,6 +38,7 @@ export const load: PageLoad = async ({ params }): Promise<Data> => {
   );
 
   return {
+    pageName: 'Clone',
     container,
     alternative,
     localImage,

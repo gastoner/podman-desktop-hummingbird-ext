@@ -16,6 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import type { ExtensionContext } from '@podman-desktop/api';
+import { navigation } from '@podman-desktop/api';
 import {
   RpcExtension,
   RoutingApi,
@@ -38,6 +39,7 @@ import type { IAsyncDisposable } from '/@/utils/async-disposable';
 import { AlternativesApiImpl } from '/@/apis/alternatives-api-impl';
 import { ContainerApi } from '@podman-desktop/extension-hummingbird-core-api/src';
 import { ContainerApiImpl } from '/@/apis/container-api-impl';
+import { RoutingService } from '/@/services/routing-service';
 
 export class MainService implements IAsyncDisposable, AsyncInit<ExtensionContext> {
   #inversify: InversifyBinding | undefined;
@@ -57,6 +59,13 @@ export class MainService implements IAsyncDisposable, AsyncInit<ExtensionContext
     const container = await this.#inversify.init();
 
     const rpcExtension = await container.getAsync(RpcExtension);
+
+    // Register navigation history provider and wire to routing service
+    const historyProvider = navigation.registerNavigationHistoryProvider();
+    context.subscriptions.push(historyProvider);
+
+    const routingService = await container.getAsync(RoutingService);
+    routingService.setHistoryProvider(historyProvider);
 
     // routing api
     rpcExtension.registerInstance<RoutingApi>(RoutingApi, await container.getAsync(RoutingApiImpl));

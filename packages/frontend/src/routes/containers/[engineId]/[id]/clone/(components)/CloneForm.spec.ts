@@ -29,6 +29,7 @@ vi.mock(import('/@/api/client'), () => ({
     getContainer: vi.fn(),
   },
   routingAPI: {
+    reportNavigation: vi.fn(),
     navigateToContainerDetails: vi.fn(),
     navigateToCatalog: vi.fn(),
     readRoute: vi.fn(),
