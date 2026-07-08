@@ -22,11 +22,7 @@ import type {
   CancellationToken,
   ImageInspectInfo,
 } from '@podman-desktop/api';
-import {
-  containerEngine as containerEngineAPI,
-  window as windowAPI,
-  ProgressLocation,
-} from '@podman-desktop/api';
+import { containerEngine as containerEngineAPI, window as windowAPI, ProgressLocation } from '@podman-desktop/api';
 
 import { beforeEach, vi, test, expect, describe } from 'vitest';
 import { PodmanService } from '/@/services/podman-service';
