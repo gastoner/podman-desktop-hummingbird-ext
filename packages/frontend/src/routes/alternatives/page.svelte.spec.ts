@@ -90,7 +90,7 @@ describe('loading', () => {
 
   test.each([true, false])(
     'skeleton table columns should match alternatives table columns (isGrypeInstalled: %s)',
-    async (isGrypeInstalled) => {
+    async isGrypeInstalled => {
       const { getByRole: getSkeletonRole } = render(Page, {
         data: {
           alternatives: new Promise<Array<LocalImageAlternative>>(vi.fn()),
