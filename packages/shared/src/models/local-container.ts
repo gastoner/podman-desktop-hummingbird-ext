@@ -21,4 +21,5 @@ export interface LocalContainer {
   engineId: string;
   name: string;
   imageID: string;
+  state: 'running' | 'exited' | 'created' | string;
 }

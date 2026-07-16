@@ -3,7 +3,7 @@ import type { LocalContainer } from '@podman-desktop/extension-hummingbird-core-
 import { Table, TableColumn, TableRow } from '@podman-desktop/ui-svelte';
 import LocalContainerNameColumn from '$lib/columns/LocalContainerNameColumn.svelte';
 import HardenAction from '/@/routes/images/[engineId]/[imageId]/report/(components)/table/columns/HardenAction.svelte';
-import ContainerStatus from '/@/routes/images/[engineId]/[imageId]/report/(components)/table/columns/ContainerStatus.svelte';
+import ContainerStatus from '/@/lib/columns/ContainerStatus.svelte';
 
 interface Props {
   containers: Array<LocalContainer>;

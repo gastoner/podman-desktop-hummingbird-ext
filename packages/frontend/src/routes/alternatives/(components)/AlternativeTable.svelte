@@ -1,6 +1,8 @@
 <script lang="ts">
 import { TableColumn, Table, TableRow } from '@podman-desktop/ui-svelte';
 import type {
+  LocalContainer,
+  LocalImage,
   LocalImageAlternative,
   LocalImageAlternativeReport,
 } from '@podman-desktop/extension-hummingbird-core-api';
@@ -28,11 +30,11 @@ let data: Row[] = $derived(
 );
 
 let columns = $derived([
-  new TableColumn<Row, 'container' | 'image'>('Status', {
+  new TableColumn<Row, LocalContainer | LocalImage>('Status', {
     align: 'center',
     width: '70px',
     renderer: StatusColumn,
-    renderMapping: (row: Row): 'container' | 'image' => ('report' in row ? 'image' : 'container'),
+    renderMapping: (row: Row): LocalContainer | LocalImage => ('report' in row ? row.localImage : row),
     overflow: true,
   }),
   new TableColumn<Row>('', {
