@@ -7,7 +7,7 @@ interface Props {
   object: LocalContainer;
 }
 
-let { object: _ }: Props = $props();
+let { object: container }: Props = $props();
 </script>
 
-<StatusIcon icon={ContainerIcon} />
+<StatusIcon icon={ContainerIcon} status={container.state.toUpperCase()} />

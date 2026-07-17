@@ -171,6 +171,7 @@ export class AlternativeService extends Publisher<void> implements AsyncInit, Di
         id: container.Id,
         name: container.Names[0],
         imageID: container.ImageID,
+        state: container.State,
       });
       accumulator.set(container.ImageID, array);
 
@@ -353,6 +354,7 @@ export class AlternativeService extends Publisher<void> implements AsyncInit, Di
             id: container.Id,
             name: container.Names[0],
             imageID: container.ImageID,
+            state: container.State,
           })),
       },
       alternative: alternative,
