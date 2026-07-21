@@ -102,7 +102,7 @@ test('should navigate to image report when info button is clicked', async () => 
   );
 });
 
-test('info button should have appropriate tooltip', async () => {
+test('info button should always show Open Image Report Details title', async () => {
   const alternativeRow = {
     name: 'nginx:latest',
     localImage: {
@@ -121,11 +121,9 @@ test('info button should have appropriate tooltip', async () => {
     report: undefined,
   } as unknown as AlternativeRow;
 
-  const { getByRole } = render(ActionColumn, { object: alternativeRow });
+  const { getByTitle } = render(ActionColumn, { object: alternativeRow });
 
-  const button = getByRole('button', {
-    name: 'You need to install Grype extension to access full report.',
-  });
+  const button = getByTitle('Open Image Report Details');
   expect(button).toBeInTheDocument();
 });
 

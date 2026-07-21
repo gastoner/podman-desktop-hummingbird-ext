@@ -23,6 +23,7 @@ import { IMAGE_QUERY_KEY } from '/@/routes/images/[engineId]/[imageId]/report/co
 interface Data {
   engineId: string;
   image: string;
+  isGrypeInstalled: boolean;
   report: Promise<OptimisationReport>;
 }
 
@@ -30,8 +31,11 @@ export const load: PageLoad = async ({ params, url }): Promise<Data> => {
   const engineId = decodeURIComponent(params.engineId);
   const imageId = decodeURIComponent(params.imageId);
 
+  const isGrypeInstalled = await alternativesAPI.isGrypeInstalled();
+
   return {
     engineId,
+    isGrypeInstalled,
     image: url.searchParams.get(IMAGE_QUERY_KEY) ?? '<unknown>',
     report: alternativesAPI.getOptimisationReport(engineId, imageId),
   };

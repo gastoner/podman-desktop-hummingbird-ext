@@ -1,16 +1,22 @@
 <script lang="ts">
-import { NavPage, EmptyScreen } from '@podman-desktop/ui-svelte';
+import { NavPage, EmptyScreen, Button } from '@podman-desktop/ui-svelte';
 import { faWarning } from '@fortawesome/free-solid-svg-icons/faWarning';
 import type { PageProps } from './$types';
 import AlternativeTable from '/@/routes/alternatives/(components)/AlternativeTable.svelte';
 import TableSkeleton from '$lib/skeleton/TableSkeleton.svelte';
 import { onMount } from 'svelte';
-import { rpcBrowser } from '/@/api/client';
+import { rpcBrowser, alternativesAPI } from '/@/api/client';
 import { invalidate } from '$app/navigation';
 import { Messages } from '@podman-desktop/extension-hummingbird-core-api';
 import GrypeBanner from '/@/routes/alternatives/(components)/banner/GrypeBanner.svelte';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlass';
+import type { LocalImageAlternativeReport } from '@podman-desktop/extension-hummingbird-core-api/src';
+import { SvelteMap } from 'svelte/reactivity';
 
 let { data }: PageProps = $props();
+
+let reports: Map<string, Promise<LocalImageAlternativeReport>> = new SvelteMap();
+let reporting: boolean = $state(false);
 
 onMount(() => {
   const subscriber = rpcBrowser.subscribe(Messages.UPDATE_ALTERNATIVES, () => {
@@ -28,29 +34,44 @@ let columns = $derived([
     name: '',
     width: '2fr',
   },
-  ...(data.isGrypeInstalled
-    ? [
-        {
-          name: 'CVEs',
-          width: '1fr',
-        },
-        {
-          name: 'Size Reduction',
-          width: '1fr',
-        },
-      ]
-    : []),
   {
     name: 'Actions',
     width: '50px',
   },
 ]);
+
+async function analyze(): Promise<void> {
+  reporting = true;
+  reports.clear();
+
+  const promises: Array<Promise<LocalImageAlternativeReport>> = [];
+
+  const alternatives = await data.alternatives;
+
+  alternatives.forEach(alternative => {
+    const promise = alternativesAPI.getAlternativeReport(alternative);
+    promises.push(promise);
+
+    reports.set(alternative.localImage.id, promise);
+  });
+
+  await Promise.allSettled(promises);
+  reporting = false;
+}
 </script>
 
 <NavPage title="Hardened Image Alternatives" searchEnabled={false}>
+  {#snippet additionalActions()}
+    <Button
+      disabled={!data.isGrypeInstalled || reporting || reports.size > 0}
+      inProgress={reporting}
+      onclick={analyze}
+      icon={faMagnifyingGlass}
+      title="Analyze images">Analyze</Button>
+  {/snippet}
   {#snippet content()}
     {#await data.alternatives}
-      <TableSkeleton count={20} columns={columns} />
+      <TableSkeleton count={10} columns={columns} />
     {:then alternatives}
       {#if alternatives.length === 0}
         <EmptyScreen
@@ -66,7 +87,7 @@ let columns = $derived([
           {/if}
 
           <div class="w-full flex">
-            <AlternativeTable alternatives={alternatives} isGrypeInstalled={data.isGrypeInstalled} />
+            <AlternativeTable alternatives={alternatives} reports={reports} />
           </div>
         </div>
       {/if}

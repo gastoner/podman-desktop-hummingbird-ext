@@ -7,7 +7,6 @@ import type {
   LocalImageAlternativeReport,
 } from '@podman-desktop/extension-hummingbird-core-api';
 import CVEReductionCell from './columns/CVEReductionColumn.svelte';
-import { alternativesAPI } from '/@/api/client';
 import FilesizeReductionColumn from './columns/FilesizeReductionColumn.svelte';
 import StatusColumn from './columns/StatusColumn.svelte';
 import type { Row } from '/@/routes/alternatives/(components)/row';
@@ -16,16 +15,16 @@ import ActionColumn from '/@/routes/alternatives/(components)/columns/ActionColu
 
 interface Props {
   alternatives: LocalImageAlternative[];
-  isGrypeInstalled: boolean;
+  reports: Map<string, Promise<LocalImageAlternativeReport>>;
 }
 
-let { alternatives, isGrypeInstalled }: Props = $props();
+let { alternatives, reports }: Props = $props();
 
 let data: Row[] = $derived(
   alternatives.map((alt, index) => ({
     ...alt,
     name: alt.localImage.name,
-    report: isGrypeInstalled ? alternativesAPI.getAlternativeReport(alt) : undefined,
+    report: reports.get(alt.localImage.id),
   })),
 );
 
@@ -42,7 +41,7 @@ let columns = $derived([
     renderer: NameColumn,
     overflow: false,
   }),
-  ...(isGrypeInstalled
+  ...(reports.size > 0
     ? [
         new TableColumn<Row, Promise<LocalImageAlternativeReport> | undefined>('CVEs', {
           width: '1fr',
@@ -86,4 +85,6 @@ function key(row: Row): string {
 }
 </script>
 
-<Table key={key} kind="alternatives" data={data} columns={columns} row={row} />
+{#key reports.size}
+  <Table key={key} kind="alternatives" data={data} columns={columns} row={row} />
+{/key}
