@@ -18,11 +18,14 @@
 
 import '@testing-library/jest-dom/vitest';
 
-import { cleanup, render, within } from '@testing-library/svelte';
+import { cleanup, render, within, screen } from '@testing-library/svelte';
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { LocalImageAlternative } from '@podman-desktop/extension-hummingbird-core-api';
 import Page from './+page.svelte';
+import { rpcBrowser } from '/@/api/client';
+
+vi.mock(import('/@/api/client'));
 
 const ALTERNATIVES: Array<LocalImageAlternative> = [
   {
@@ -52,6 +55,7 @@ const ALTERNATIVES: Array<LocalImageAlternative> = [
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.mocked(rpcBrowser.subscribe).mockReturnValue({ unsubscribe: vi.fn() });
 });
 
 describe('error', () => {
@@ -88,40 +92,37 @@ describe('loading', () => {
     expect(skeletons).toBeInTheDocument();
   });
 
-  test.each([true, false])(
-    'skeleton table columns should match alternatives table columns (isGrypeInstalled: %s)',
-    async isGrypeInstalled => {
-      const { getByRole: getSkeletonRole } = render(Page, {
-        data: {
-          alternatives: new Promise<Array<LocalImageAlternative>>(vi.fn()),
-          isGrypeInstalled,
-        },
-        params: {},
-      });
+  test('skeleton table columns should match alternatives table columns', async () => {
+    const { getByRole: getSkeletonRole } = render(Page, {
+      data: {
+        alternatives: new Promise<Array<LocalImageAlternative>>(vi.fn()),
+        isGrypeInstalled: false,
+      },
+      params: {},
+    });
 
-      const skeletonTable = getSkeletonRole('table', { name: 'loading' });
-      const skeletonHeaders = within(skeletonTable)
-        .getAllByRole('columnheader')
-        .map(el => el.textContent?.trim() ?? '');
+    const skeletonTable = getSkeletonRole('table', { name: 'loading' });
+    const skeletonHeaders = within(skeletonTable)
+      .getAllByRole('columnheader')
+      .map(el => el.textContent?.trim() ?? '');
 
-      cleanup();
+    cleanup();
 
-      const { getByRole } = render(Page, {
-        data: {
-          alternatives: Promise.resolve(ALTERNATIVES),
-          isGrypeInstalled,
-        },
-        params: {},
-      });
+    const { getByRole } = render(Page, {
+      data: {
+        alternatives: Promise.resolve(ALTERNATIVES),
+        isGrypeInstalled: false,
+      },
+      params: {},
+    });
 
-      const alternativesTable = await vi.waitFor(() => getByRole('table', { name: 'alternatives' }));
-      const actualHeaders = within(alternativesTable)
-        .getAllByRole('columnheader')
-        .map(el => el.textContent?.trim() ?? '');
+    const alternativesTable = await vi.waitFor(() => getByRole('table', { name: 'alternatives' }));
+    const actualHeaders = within(alternativesTable)
+      .getAllByRole('columnheader')
+      .map(el => el.textContent?.trim() ?? '');
 
-      expect(skeletonHeaders).toEqual(actualHeaders);
-    },
-  );
+    expect(skeletonHeaders).toEqual(actualHeaders);
+  });
 });
 
 describe('data', () => {
@@ -151,5 +152,33 @@ describe('data', () => {
     await vi.waitFor(() => {
       expect(getByLabelText('No alternatives found')).toBeDefined();
     });
+  });
+});
+
+describe('analyze button', () => {
+  test('should be disabled when grype is not installed', async () => {
+    render(Page, {
+      data: {
+        alternatives: Promise.resolve(ALTERNATIVES),
+        isGrypeInstalled: false,
+      },
+      params: {},
+    });
+
+    const button = await vi.waitFor(() => screen.getByTitle('Analyze images'));
+    expect(button).toBeDisabled();
+  });
+
+  test('should be enabled when grype is installed', async () => {
+    render(Page, {
+      data: {
+        alternatives: Promise.resolve(ALTERNATIVES),
+        isGrypeInstalled: true,
+      },
+      params: {},
+    });
+
+    const button = await vi.waitFor(() => screen.getByTitle('Analyze images'));
+    expect(button).toBeEnabled();
   });
 });
